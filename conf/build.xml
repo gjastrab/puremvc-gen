@@ -1,0 +1,367 @@
+<?xml version="1.0"?>
+<project default="info">
+	
+	<property environment="env" />
+	
+	<!-- ********************** PROPERTY INITIALIZATION TASKS ********************** -->
+	
+	<target name="set-pmvc-gen-conditions">	    
+        <condition property="pmvcgen.home.set">
+            <isset property="env.PMVC_GEN_HOME" />
+        </condition>
+        <condition property="pmvcgen.dir.set">
+            <isset property="pmvcgen.dir" />
+        </condition>
+        <condition property="in.pmvcgen.dir">
+            <and>
+                <available file="config" />
+                <available file="config/pmvcgen.properties" />
+                <available file="config/pmvcgen.log.properties" />
+            </and>
+        </condition>
+    </target>
+    
+    <target name="set-project-conditions">
+        <condition property="proj.dir.set">
+            <isset property="proj.dir" />
+        </condition>
+        <condition property="proj.properties.available">
+            <available file="proj.properties" />
+        </condition>
+    </target>
+
+	<target name="read-properties" description="Reads in property files in at least an obtrusive way as possible."
+	        depends="set-pmvc-gen-conditions,pmvc-gen-properties,set-project-conditions,project-properties">
+	    <echo>Read in PureMVCGen and project properties.</echo>
+	</target>
+	
+	<target name="pmvc-gen-properties" description="Determines PureMVCGen properties."
+	        depends="pmvc-gen-properties-from-env-home,pmvc-gen-properties-from-pmvcgen-dir,pmvc-gen-properties-from-within-pmvcgen-dir">
+	    <echo>PureMVCGen Properties have been set.</echo>
+	</target>
+	
+	<target name="pmvc-gen-properties-from-env-home" if="pmvcgen.home.set">
+	    <condition property="pmvcgen.home.valid">
+	        <and>
+	            <available file="${env.PMVC_GEN_HOME}" />
+	            <available file="${env.PMVC_GEN_HOME}/config" />
+	            <available file="${env.PMVC_GEN_HOME}/config/pmvcgen.properties" />
+	            <available file="${env.PMVC_GEN_HOME}/config/pmvcgen.log.properties" />
+	        </and>
+	    </condition>
+	    <fail message="PMVC_GEN_HOME is not set to a valid directory." unless="pmvcgen.home.valid" />
+	    <property file="${env.PMVC_GEN_HOME}/config/pmvcgen.properties" />
+	    <property file="${env.PMVC_GEN_HOME}/config/pmvcgen.log.properties" />
+	    <property name="pmvcgen.dir" value="${env.PMVC_GEN_HOME}" />
+	</target>
+	
+	<target name="pmvc-gen-properties-from-pmvcgen-dir" if="pmvcgen.dir.set">
+	    <condition property="pmvcgen.dir.valid">
+	        <and>
+	            <available file="${pmvcgen.dir}" />
+	            <available file="${pmvcgen.dir}/config" />
+	            <available file="${pmvcgen.dir}/config/pmvcgen.properties" />
+	            <available file="${pmvcgen.dir}/config/pmvcgen.log.properties" />
+            </and>
+        </condition>
+        <fail message="The pmvcgen.dir is not pointing to a valid PureMVCGen directory." unless="pmvcgen.dir.valid" />
+        <property file="${pmvcgen.dir}/config/pmvcgen.properties" />
+        <property file="${pmvcgen.dir}/config/pmvcgen.log.properties" />
+    </target>
+    
+    <target name="pmvc-gen-properties-from-within-pmvcgen-dir" if="in.pmvcgen.dir">
+        <property file="config/pmvcgen.properties" />
+        <property file="config/pmvcgen.log.properties" />
+    </target>
+	
+	<target name="project-properties" description="Determines project properties."
+	        depends="project-properties-from-project-dir,project-properties-from-basedir">
+    </target>
+    
+    <target name="project-properties-from-project-dir" if="proj.dir.set">
+        <condition property="proj.dir.valid">
+            <and>
+                <available file="${proj.dir}" />
+                <available file="${proj.dir}/proj.properties" />
+            </and>
+        </condition>
+        <fail message="The proj.dir (${proj.dir}) either doesn't exist or it doesn't contain a proj.properties file!"
+              unless="proj.dir.valid" />
+        <property file="${proj.dir}/proj.properties" />
+        <property file="${proj.dir}/author.properties" />
+    </target>
+    
+    <target name="project-properties-from-basedir" if="proj.properties.available">
+        <property file="proj.properties" />
+        <property file="${proj.dir}/author.properties" />
+    </target>
+	
+	<target name="validate-properties" description="Ensures all required properties have been set"
+	        depends="read-properties">
+	    <!-- Validate PureMVCGen Properties -->
+	    <condition property="pmvcgen.properties.are.set">
+	        <and>
+	            <isset property="model.dir" />
+	            <isset property="view.dir" />
+	            <isset property="controller.dir" />
+	            <isset property="events.dir" />
+	            <isset property="templates.dir" />
+            </and>
+        </condition>
+    	<fail unless="pmvcgen.properties.are.set">
+		    <![CDATA[ERROR:
+	All required PureMVCGen properties have not been set.
+	Please verify you are either:
+	    1. Setting the PMVC_GEN_HOME environment variable to point to the PureMVCGen directory
+	    2. Setting the pmvcgen.dir property
+	    3. Running this build file from within the PureMVCGen directory
+	Required PureMVCGen properties are:
+	    -model.dir => name for the model directory ("model" by default)
+	    -view.dir => name for the view directory ("view" by default)
+	    -controller.dir => name for the controller directory ("controller" by default)
+	    -events.dir => name for the events directory ("events" by default)]]>
+	    </fail>
+	    <!-- Validate Project Properties -->
+		<condition property="project.properties.are.set">
+			<and>
+				<isset property="app.prefix" />
+				<isset property="project.name" />
+				<isset property="core.namespace" />
+				<isset property="core.dir" />
+				<isset property="pmvc.flavor" />
+			</and>
+		</condition>
+		<fail unless="project.properties.are.set">
+		    <![CDATA[ERROR:
+	All required project properties have not been set.
+	Please verify you are including the necessary .properties files.
+	Required project properties are:
+	    -app.prefix => Prefix you'd like prepended to your Facade and Application Mediator
+	    -project.name => Name of the project which will be used to create the main MXML file
+	    -core.namespace => Core package structure (where PureMVC directories and Facade will be placed)
+	        Example: com.slslabs.puremvc.generator
+	    -core.dir => Directory location of core package structure.  This should just be the core.namespace with the .'s replaced with /'s
+	        Example: com/slslabs/puremvc/generator
+	    -pmvc.flavor => standard / multicore]]>
+	    </fail>
+	    <property name="all.properties.valid" value="true" />
+	    <echo>All properties have been read in and verified.</echo>
+	</target>
+	
+	<target name="init" description="Initializes project environment."
+	        depends="validate-properties">
+		<!-- determine standard vs multicore -->
+		<property name="event.template"     value="${pmvcgen.dir}/${templates.dir}/Event.tpl" />
+		<property name="app.template"		value="${pmvcgen.dir}/${templates.dir}/${pmvc.flavor}/Application.tpl" />
+		<property name="facade.template"	value="${pmvcgen.dir}/${templates.dir}/${pmvc.flavor}/Facade.tpl" />
+		<property name="macro.template"		value="${pmvcgen.dir}/${templates.dir}/${pmvc.flavor}/MacroCommand.tpl" />
+		<property name="mediator.template"	value="${pmvcgen.dir}/${templates.dir}/${pmvc.flavor}/Mediator.tpl" />
+		<property name="proxy.template"		value="${pmvcgen.dir}/${templates.dir}/${pmvc.flavor}/Proxy.tpl" />
+		<property name="simple.template"	value="${pmvcgen.dir}/${templates.dir}/${pmvc.flavor}/SimpleCommand.tpl" />
+		
+		<tstamp>
+		    <format property="today" pattern="MM/dd/yyyy" />
+		</tstamp>
+	</target>
+
+	<target name="info" description="Outputs the current PureMVC classes in the project.">
+	    <echo>Basedir is: ${basedir}</echo>
+	</target>
+	
+	<target name="strip-comments" description="Strips the //pmvcgen: comments from all files."
+	        depends="init">
+	</target>
+
+	<target name="new-pmvc" description="Creates the core project directories, generates the Facade, StartupCommand, and main MXML file."
+			depends="init,create-dirs,create-main-mxml,create-facade,create-startup-command,create-prepare-actors-command,create-application-mediator">
+	</target>
+
+	<target name="create-dirs" description="Creates the core project directories.">
+		<echo>Creating PureMVC Core project directory: ${core.dir}</echo>
+		<mkdir dir="${core.dir}" />
+		<echo>Creating PureMVC directories in ${core.dir}</echo>
+		<mkdir dir="${core.dir}/${model.dir}" />
+		<mkdir dir="${core.dir}/${view.dir}" />
+		<mkdir dir="${core.dir}/${controller.dir}" />
+		<mkdir dir="${core.dir}/${events.dir}" />
+	</target>
+	
+	<target name="set-filters">
+    	<filterset id="common.filters">
+    		<filter token="app.prefix" value="${app.prefix}" />
+    		<filter token="project.name" value="${project.name}" />
+    		<filter token="namespace" value="${core.namespace}" />
+    		<filter token="model" value="${model.dir}" />
+    		<filter token="view" value="${view.dir}" />
+    		<filter token="ctrls" value="${controller.dir}" />
+    		<filter token="author.name" value="${author.name}" />
+    		<filter token="author.email" value=" &lt;${author.email}&gt;" />
+    		<filter token="version" value="${version}" />
+    		<filter token="today" value="${today}" />
+    	</filterset>
+    </target>
+	
+	<!-- ********************** GENERATION TASKS ********************** -->
+
+	<target name="create-main-mxml" depends="init,set-filters"
+			description="Creates the main MXML class, initializing the Facade and sending the startup command.">
+		<echo>Creating main MXML for PureMVC project.</echo>
+		<copy file="${app.template}"
+			  toFile="${project.name}.mxml">
+			<filterset refid="common.filters" />
+		</copy>
+	</target>
+	
+	<target name="create-event" depends="init,set-filters"
+	        description="Creates a new event class.">
+	    <echo>${log.gen.event}</echo>
+	    <input message="Specify the name of the new event class you wish to create:" addproperty="event.class.name" />
+	    <copy file="${event.template}"
+	          toFile="${core.dir}/${events.dir}/${event.class.name}.as">
+	        <filterset refid="common.filters" />
+	        <filterset>
+	            <filter token="event.name" value="${event.class.name}" />
+	        </filterset>
+	    </copy>
+	</target>
+
+    <target name="create-facade" depends="init,set-filters" description="Creates the facade class.">
+		<echo>${log.gen.facade}</echo>
+		<copy file="${facade.template}"
+			  toFile="${core.dir}/${app.prefix}Facade.as">
+			<filterset refid="common.filters" />
+		</copy>
+	</target>
+	
+	<target name="create-macro-command" depends="init,prompt-command-name,set-filters"
+	        description="Creates a MacroCommand">
+	    <echo>${log.gen.macro.command}</echo>
+		<copy file="${macro.template}"
+		      toFile="${core.dir}/${controller.dir}/${cmd.name}Command.as">
+		    <filterset refid="common.filters" />
+		    <filterset>
+		        <filter token="command.name" value="${cmd.name}" />
+		    </filterset>
+		</copy>
+		<replace file="${core.dir}/${app.prefix}Facade.as"
+		         token="//pmvcgen:register commands">
+		    <replacevalue><![CDATA[registerCommand(/* CONST FOR COMMAND */, PMVCGenCommand);
+	        //pmvcgen:register commands]]></replacevalue>
+	        <replacefilter token="PMVCGenCommand" value="${cmd.name}Command" />
+		</replace>
+	</target>
+	
+	<target name="create-simple-command" depends="init,prompt-command-name,set-filters"
+	        description="Creates a SimpleCommand">
+	    <echo>${log.gen.simple.command}</echo>
+		<copy file="${simple.template}"
+		      toFile="${core.dir}/${controller.dir}/${cmd.name}Command.as">
+		    <filterset refid="common.filters" />
+		    <filterset>
+		        <filter token="command.name" value="${cmd.name}" />
+		    </filterset>
+		</copy>
+	</target>
+	
+	<target name="create-mediator" depends="init,prompt-mediator-name,set-filters"
+	        description="Creates a Mediator">
+	    <echo>${log.gen.mediator}</echo>
+	    <copy file="${mediator.template}"
+	          toFile="${core.dir}/${view.dir}/${mediator.name}Mediator.as">
+	        <filterset refid="common.filters" />
+	        <filterset>
+	            <filter token="facade" value="${app.prefix}Facade" />
+	            <filter token="mediator.name" value="${mediator.name}" />
+	        </filterset>
+	    </copy>
+	</target>
+	
+	<target name="create-proxy" depends="init,prompt-proxy-name,set-filters"
+	        description="Creates a Proxy">
+	    <echo>${log.gen.proxy}</echo>
+	    <copy file="${proxy.template}"
+	          toFile="${core.dir}/${model.dir}/${proxy.name}Proxy.as">
+	        <filterset refid="common.filters" />
+	        <filterset>
+	            <filter token="facade" value="${app.prefix}Facade" />
+	            <filter token="proxy.name" value="${proxy.name}" />
+	        </filterset>
+	    </copy>
+	</target>
+	
+	<target name="create-startup-command" depends="init" description="Creates the StartupCommand">
+	    <echo>${log.gen.startup.command}</echo>
+	    <antcall target="create-macro-command">
+	        <param name="cmd.name" value="Startup" />
+	    </antcall>
+	    <replace file="${core.dir}/${app.prefix}Facade.as"
+	             token="/* CONST FOR COMMAND */" value="STARTUP" />
+	</target>
+	
+	<target name="create-prepare-actors-command" depends="init" description="Creates the PrepareActorsCommand">
+	    <echo>${log.gen.prepare.command}</echo>
+	    <antcall target="create-simple-command">
+	        <param name="cmd.name" value="PrepareActors" />
+	    </antcall>
+	    <replace file="${core.dir}/${controller.dir}/PrepareActorsCommand.as"
+	             token="//pmvcgen:insert imports">
+	        <replacevalue><![CDATA[import @namespace@.@model.dir@.*;
+	import @namespace@.@view.dir@.*;]]></replacevalue>
+            <replacefilter token="@namespace@"  value="${core.namespace}" />
+            <replacefilter token="@model.dir@"  value="${model.dir}" />
+            <replacefilter token="@view.dir@"   value="${view.dir}" />
+        </replace>
+        <replace file="${core.dir}/${controller.dir}/PrepareActorsCommand.as"
+                 token="//pmvcgen:insert command logic">
+            <replacevalue><![CDATA[//pmvcgen:register proxies
+            
+            //pmvcgen:register mediators]]></replacevalue>
+        </replace>
+	</target>
+	
+	<target name="create-application-mediator" depends="init" description="Creates the Application mediator.">
+	    <echo></echo>
+	    <antcall target="create-mediator">
+	        <param name="mediator.name" value="${app.prefix}" />
+	    </antcall>
+        <replace file="${core.dir}/${view.dir}/${app.prefix}Mediator.as">
+            <replacefilter token="YOURVIEWNAME" value="app" />
+            <replacefilter token="YOURVIEWOBJ"  value="${project.name}" />
+        </replace>
+	</target>
+	
+    <!-- ********************** PROMPT TASKS ********************** -->
+	
+	<target name="prompt-command-name" unless="cmd.name"
+	        description="Prompts the user to enter a command name, unless cmd.name is already set.">
+        <input message="${log.prompt.command}" addproperty="cmd.name" />
+        <condition property="do.abort">
+            <length string="${cmd.name}" length="0" />
+        </condition>
+        <fail message="${log.fail.command.name}" if="do.abort" />
+        <input message="${log.prompt.command.constant}" addproperty="cmd.const" />
+        <condition property="do.abort">
+            <length string="${cmd.const}" length="0" />
+        </condition>
+        <fail message="${log.fail.command.constant}" if="do.abort" />
+	</target>
+	
+	<target name="prompt-mediator-name" unless="mediator.name"
+	        description="Prompts the user to enter a mediator name, unless mediator.name is already set.">
+	    <input message="${log.prompt.mediator}" addproperty="mediator.name" />
+	    <condition property="do.abort">
+	        <length string="${mediator.name}" length="0" />
+	    </condition>
+	    <fail message="${log.fail.mediator.name}" if="do.abort" />
+	</target>
+	
+	<target name="prompt-proxy-name" unless="proxy.name"
+	        description="Prompts the user to enter a proxy name, unless proxy.name is already set.">
+	    <input message="${log.prompt.proxy}" addproperty="proxy.name" />
+	    <condition property="do.abort">
+	        <length string="${proxy.name}" length="0" />
+	    </condition>
+	    <fail message="${log.fail.proxy.name}" if="do.abort" />
+	</target>
+
+</project>
