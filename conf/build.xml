@@ -252,7 +252,7 @@
 		</replace>
 	</target>
 	
-	<target name="create-simple-command" depends="init,prompt-command-name,prompt-command-const,set-filters"
+	<target name="create-simple-command" depends="init,prompt-command-name,set-filters"
 	        description="Creates a SimpleCommand">
 	    <echo>${log.gen.simple.command}</echo>
 		<copy file="${simple.template}"
@@ -296,6 +296,14 @@
 	        <param name="cmd.name" value="Startup" />
 	        <param name="cmd.const" value="STARTUP" />
 	    </antcall>
+	    <replace file="${core.dir}/${controller.dir}/StartupCommand.as"
+	             token="//pmvcgen:import commands">
+	        <replacevalue><![CDATA[import @namespace@.@controller.dir@.PrepareActorsCommand;
+	//pmvcgen:import commands]]></replacevalue>
+	        <replacefilter token="//pmvcgen:chain simple commands" value="addSubCommand(PrepareActorsCommand);" />
+	        <replacefilter token="@namespace@" value="${core.namespace}" />
+	        <replacefilter token="@controller.dir@" value="${controller.dir}" />
+	    </replace>
 	    <!--replace file="${core.dir}/${app.prefix}Facade.as"
 	             token="/* CONST FOR COMMAND */" value="STARTUP" /-->
 	</target>
