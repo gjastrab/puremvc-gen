@@ -1,26 +1,5 @@
 #!/usr/bin/env ruby
-require 'rubygems'
-require 'cmdparse'
-
-PMVC_GEN_LIB = File.join(File.dirname(__FILE__), '..', 'lib', 'pure_m_v_c_gen')
-require File.join(PMVC_GEN_LIB, 'ant_checker')
-
-unless PureMVCGen::AntChecker.has_ant_installed?
-  err = <<-EOL
-    You must have ANT installed to run puremvc-gen.
-    Install it! ==> http://ant.apache.org
-    If you have it installed, ensure it is on your path.
-  EOL
-  puts err
-  exit 1
-end
-
-CMD_PATH = File.join(PMVC_GEN_LIB, 'commands')
-
-require File.join(CMD_PATH, 'command_extensions')
-require File.join(CMD_PATH, 'check_command')
-require File.join(CMD_PATH, 'initialize_command')
-require File.join(CMD_PATH, 'new_command')
+require 'pure_m_v_c_gen'
 
 include PureMVCGen::Commands
 
@@ -33,7 +12,7 @@ end
 
 cmd = CmdParse::CommandParser.new(true, true)
 cmd.program_name    = "puremvc-gen "
-cmd.program_version = [0, 0, 1]
+cmd.program_version = PureMVCGen::Version::ARRAY
 
 cmd.add_command(CmdParse::HelpCommand.new)
 cmd.add_command(CmdParse::VersionCommand.new)

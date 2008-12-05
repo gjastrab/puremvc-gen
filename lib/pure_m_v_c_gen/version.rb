@@ -14,7 +14,8 @@ module PureMVCGen
     MINOR = 1
     TINY  = 0
 
-    STRING = [MAJOR, MINOR, TINY].join(".")
+    ARRAY  = [MAJOR, MINOR, TINY]
+    STRING = ARRAY.join(".")
   end
 end
 
