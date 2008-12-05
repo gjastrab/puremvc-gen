@@ -182,7 +182,7 @@
 		<echo>Creating PureMVC directories in ${core.dir}</echo>
 		<mkdir dir="${core.dir}/${model.dir}" />
 		<mkdir dir="${core.dir}/${view.dir}" />
-		<mkdir dir="${core.dir}/${controller.dir}" />
+		<mkdir dir="${core.dir}/${controller.dir}/components" />
 		<mkdir dir="${core.dir}/${events.dir}" />
 	</target>
 	
@@ -248,6 +248,7 @@
 		    <replacevalue><![CDATA[registerCommand(/* CONST FOR COMMAND */, PMVCGenCommand);
 	        //pmvcgen:register commands]]></replacevalue>
 	        <replacefilter token="PMVCGenCommand" value="${cmd.name}Command" />
+	        <replacefilter token="/* CONST FOR COMMAND */" value="${cmd.const}" />
 		</replace>
 	</target>
 	
@@ -293,9 +294,10 @@
 	    <echo>${log.gen.startup.command}</echo>
 	    <antcall target="create-macro-command">
 	        <param name="cmd.name" value="Startup" />
+	        <param name="cmd.const" value="STARTUP" />
 	    </antcall>
-	    <replace file="${core.dir}/${app.prefix}Facade.as"
-	             token="/* CONST FOR COMMAND */" value="STARTUP" />
+	    <!--replace file="${core.dir}/${app.prefix}Facade.as"
+	             token="/* CONST FOR COMMAND */" value="STARTUP" /-->
 	</target>
 	
 	<target name="create-prepare-actors-command" depends="init" description="Creates the PrepareActorsCommand">

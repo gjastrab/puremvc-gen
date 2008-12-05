@@ -1,6 +1,46 @@
 #!/usr/bin/env ruby
+require 'rubygems'
+require 'cmdparse'
 
-puts "About to run the ant script"
+BUILDFILE = File.join(File.dirname(__FILE__), '..', 'conf', 'build.xml')
 
-path = File.join(File.dirname(__FILE__), '..', 'conf', 'build.xml')
-system "ant -f #{path}"
+def call_ant(args='')
+  system "ant -f #{BUILDFILE} -Dbasedir=#{Dir.pwd} #{args}"
+end
+
+class CheckCommand < CmdParse::Command
+  
+  def initialize
+    super('check', false)
+    self.short_desc = "Validates that all required property settings are current detected"
+  end
+  
+  def execute(args)
+    call_ant "validate-properties"
+  end
+end
+
+class InitializeCommand < CmdParse::Command
+  
+  def initialize
+    super('init', false)
+    self.short_desc = "Initializes the current working directory with a new PureMVC project"
+  end
+  
+  def execute(args)
+    call_ant "new-pmvc"
+  end
+  
+end
+
+cmd = CmdParse::CommandParser.new(true, true)
+cmd.program_name  = "puremvc-gen"
+cmd.version       = [0, 0, 1]
+
+cmd.add_command(CmdParse::HelpCommand.new)
+cmd.add_command(CmdParse::VersionCommand.new)
+
+cmd.add_command(CheckCommand.new)
+cmd.add_command(InitializeCommand.new)
+
+cmd.parse

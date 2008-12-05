@@ -41,7 +41,7 @@ package @namespace@.@model@ {
 		
 		/* --- Public Accessors --- */
 		
-		public function get data():Object { return data; }
+		public function get dataObject():Object { return data; }
 		
 		/* === Public Accessors === */
 		
