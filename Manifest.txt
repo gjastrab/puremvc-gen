@@ -17,5 +17,11 @@ conf/templates/standard/Mediator.tpl
 conf/templates/standard/Proxy.tpl
 conf/templates/standard/SimpleCommand.tpl
 lib/pure_m_v_c_gen.rb
+lib/pure_m_v_c_gen/ant_checker.rb
+lib/pure_m_v_c_gen/commands/check_command.rb
+lib/pure_m_v_c_gen/commands/command_extensions.rb
+lib/pure_m_v_c_gen/commands/initialize_command.rb
+lib/pure_m_v_c_gen/commands/new_command.rb
 lib/pure_m_v_c_gen/version.rb
+puremvc-gen.gemspec
 test/test_pure_m_v_c_gen.rb

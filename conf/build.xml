@@ -233,7 +233,7 @@
 		</copy>
 	</target>
 	
-	<target name="create-macro-command" depends="init,prompt-command-name,set-filters"
+	<target name="create-macro-command" depends="init,prompt-command-name,prompt-command-const,set-filters"
 	        description="Creates a MacroCommand">
 	    <echo>${log.gen.macro.command}</echo>
 		<copy file="${macro.template}"
@@ -252,7 +252,7 @@
 		</replace>
 	</target>
 	
-	<target name="create-simple-command" depends="init,prompt-command-name,set-filters"
+	<target name="create-simple-command" depends="init,prompt-command-name,prompt-command-const,set-filters"
 	        description="Creates a SimpleCommand">
 	    <echo>${log.gen.simple.command}</echo>
 		<copy file="${simple.template}"
@@ -341,12 +341,16 @@
             <length string="${cmd.name}" length="0" />
         </condition>
         <fail message="${log.fail.command.name}" if="do.abort" />
+	</target>
+	
+	<target name="prompt-command-const" unless="cmd.const"
+	        description="Prompts the user to enter a command constant, unless cmd.const is already set.">
         <input message="${log.prompt.command.constant}" addproperty="cmd.const" />
         <condition property="do.abort">
             <length string="${cmd.const}" length="0" />
         </condition>
         <fail message="${log.fail.command.constant}" if="do.abort" />
-	</target>
+    </target>
 	
 	<target name="prompt-mediator-name" unless="mediator.name"
 	        description="Prompts the user to enter a mediator name, unless mediator.name is already set.">
