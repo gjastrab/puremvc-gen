@@ -1,4 +1,9 @@
-=== 1.0.0 / 2008-12-02
+=== 0.1.1 / 2008-12-18
+
+* Working on Windows!
+* Moved events directory into view folder
+
+=== 0.1.0 / 2008-12-02
 
 * 1 major enhancement
 

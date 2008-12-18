@@ -2,11 +2,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{puremvc-gen}
-  s.version = "0.1.0"
+  s.version = "0.1.1"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Greg Jastrab"]
-  s.date = %q{2008-12-05}
+  s.date = %q{2008-12-18}
   s.default_executable = %q{puremvc-gen}
   s.description = %q{An ANT-based PureMVC generator.}
   s.email = %q{gjastrab.dev@gmail.com}
@@ -14,7 +14,7 @@ Gem::Specification.new do |s|
   s.extra_rdoc_files = ["History.txt", "Manifest.txt", "README.txt"]
   s.files = ["History.txt", "Manifest.txt", "README.txt", "Rakefile", "bin/puremvc-gen", "conf/build.xml", "conf/config/pmvcgen.log.properties", "conf/config/pmvcgen.properties", "conf/example/author.properties", "conf/example/proj.properties", "conf/templates/.DS_Store", "conf/templates/Event.tpl", "conf/templates/standard/Application.tpl", "conf/templates/standard/Facade.tpl", "conf/templates/standard/MacroCommand.tpl", "conf/templates/standard/Mediator.tpl", "conf/templates/standard/Proxy.tpl", "conf/templates/standard/SimpleCommand.tpl", "lib/pure_m_v_c_gen.rb", "lib/pure_m_v_c_gen/ant_checker.rb", "lib/pure_m_v_c_gen/commands/check_command.rb", "lib/pure_m_v_c_gen/commands/command_extensions.rb", "lib/pure_m_v_c_gen/commands/initialize_command.rb", "lib/pure_m_v_c_gen/commands/new_command.rb", "lib/pure_m_v_c_gen/version.rb", "puremvc-gen.gemspec", "test/test_pure_m_v_c_gen.rb"]
   s.has_rdoc = true
-  s.homepage = %q{FIX (url)}
+  s.homepage = %q{http://bit.ly/puremvc-gen}
   s.rdoc_options = ["--main", "README.txt"]
   s.require_paths = ["lib"]
   s.rubyforge_project = %q{gjastrab}

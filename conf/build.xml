@@ -183,7 +183,7 @@
 		<mkdir dir="${core.dir}/${model.dir}" />
 		<mkdir dir="${core.dir}/${view.dir}" />
 		<mkdir dir="${core.dir}/${controller.dir}/components" />
-		<mkdir dir="${core.dir}/${events.dir}" />
+		<mkdir dir="${core.dir}/${view.dir}/${events.dir}" />
 	</target>
 	
 	<target name="set-filters">
@@ -217,7 +217,7 @@
 	    <echo>${log.gen.event}</echo>
 	    <input message="Specify the name of the new event class you wish to create:" addproperty="event.class.name" />
 	    <copy file="${event.template}"
-	          toFile="${core.dir}/${events.dir}/${event.class.name}.as">
+	          toFile="${core.dir}/${view.dir}/${events.dir}/${event.class.name}.as">
 	        <filterset refid="common.filters" />
 	        <filterset>
 	            <filter token="event.name" value="${event.class.name}" />

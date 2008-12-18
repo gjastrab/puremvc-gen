@@ -7,7 +7,7 @@ PMVC_GEN_HOME = File.join(File.dirname(__FILE__), '..', 'conf')
 BUILDFILE = File.join(PMVC_GEN_HOME, 'build.xml')
 
 def call_ant(args='')
-  system "ant -f #{BUILDFILE} -Dpmvcgen.dir=#{PMVC_GEN_HOME} -Dbasedir=#{Dir.pwd} #{args}"
+  system "#{ANT_BIN} -f #{File.expand_path BUILDFILE} -Dpmvcgen.dir=#{File.expand_path PMVC_GEN_HOME} -Dbasedir=#{Dir.pwd} #{args}"
 end
 
 cmd = CmdParse::CommandParser.new(true, true)

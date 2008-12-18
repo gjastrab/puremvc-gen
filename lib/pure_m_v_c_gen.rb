@@ -15,6 +15,8 @@ unless PureMVCGen::AntChecker.has_ant_installed?
   exit 1
 end
 
+ANT_BIN = PureMVCGen::AntChecker.on_windows? ? PureMVCGen::AntChecker.get_windows_ant : "ant"
+
 CMD_PATH = File.join(PMVC_GEN_LIB, 'commands')
 
 require File.join(CMD_PATH, 'command_extensions')
